@@ -63,7 +63,9 @@ public class AuthController {
 
     @PostMapping("/register")
     @Transactional
-    public ResponseEntity<?> register(@RequestBody @Valid RegisterDTO data, BindingResult result) {
+    public ResponseEntity<?> register(
+            @RequestBody @Valid RegisterDTO data,
+            BindingResult result) {
 
         if (result.hasErrors()) {
             List<String> errorMessages = result.getAllErrors().stream()
@@ -72,7 +74,7 @@ public class AuthController {
             return ResponseEntity.badRequest()
                     .body(new Return.MessageWithArray<String>("Erros de validação", errorMessages));
         }
-        
+
         try {
             authService.register(data);
 

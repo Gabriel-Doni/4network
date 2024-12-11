@@ -10,8 +10,10 @@ import org.springframework.stereotype.Service;
 
 import com.teste._network.dto.RegisterProductDTO;
 import com.teste._network.dto.ResponseProductDTO;
+import com.teste._network.entity.Image;
 import com.teste._network.entity.Product;
 import com.teste._network.repository.ClientRepository;
+import com.teste._network.repository.ImageRepository;
 import com.teste._network.repository.ProductRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -25,6 +27,9 @@ public class ProductService {
     @Autowired
     private ClientRepository clientRepository;
 
+    @Autowired
+    private ImageRepository imageRepository;
+
     public void createProduct(RegisterProductDTO data, UUID id) {
 
         final Product product = new Product();
@@ -33,7 +38,6 @@ public class ProductService {
                 .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado")));
         product.setName(data.name());
         product.setPrice(data.price());
-        product.setPhoto(null);
 
         productRepository.save(product);
 
@@ -53,8 +57,8 @@ public class ProductService {
                     product.getClient().getIdClient(),
                     product.getName(),
                     product.getPrice(),
-                    product.getPhoto(),
-                    product.getCreatedAt()));
+                    product.getCreatedAt(),
+                    product.getImage()));
         }
 
         if (page == 0 && res.isEmpty()) {
@@ -78,8 +82,24 @@ public class ProductService {
                         product.getClient().getIdClient(),
                         product.getName(),
                         product.getPrice(),
-                        product.getPhoto(),
-                        product.getCreatedAt()));
+                        product.getCreatedAt(),
+                        product.getImage()));
+    }
+
+    public void saveProductImage(byte[] bytes, Long idProduct) throws Exception {
+
+        Product product = productRepository.findById(idProduct)
+                .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
+
+        Image image = new Image();
+
+        image.setPhoto(bytes);
+
+        Image savedImage = imageRepository.save(image);
+
+        product.setImage(savedImage);
+
+        productRepository.save(product);
     }
 
 }

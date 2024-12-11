@@ -23,6 +23,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -43,7 +44,6 @@ public class Client implements UserDetails {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID idClient;
 
-    @NotNull
     private Role role;
 
     @Column(unique = true)
@@ -63,14 +63,15 @@ public class Client implements UserDetails {
     @Embedded
     private Address address;
 
-    private String photo;
-
     @CreationTimestamp
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonProperty(access = Access.WRITE_ONLY)
     private List<Product> products = new ArrayList<>();
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private Image image;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

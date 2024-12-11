@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.teste._network.dto.RegisterProductDTO;
 import com.teste._network.dto.ResponseProductDTO;
@@ -52,6 +53,20 @@ public class ProductController {
             productService.createProduct(data, tokenService.getIdFromToken(token = token.replace("Bearer ", "")));
 
             return ResponseEntity.ok(new Return.Message("Produto registrado!"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new Return.Message(e.getMessage()));
+        }
+    }
+
+    @PostMapping("/image")
+    public ResponseEntity<?> saveClientImage(@RequestParam("file") MultipartFile file,
+            @RequestParam("idProduct") Long id) {
+
+        try {
+            productService.saveProductImage(file.getBytes(), id);
+
+            return ResponseEntity.ok(new Return.Message("Imagem salva!"));
+
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new Return.Message(e.getMessage()));
         }

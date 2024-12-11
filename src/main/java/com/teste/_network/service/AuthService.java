@@ -48,7 +48,6 @@ public class AuthService implements UserDetailsService {
         client.setName(data.name());
         client.setPassword(new BCryptPasswordEncoder().encode(data.password()));
         client.setRole(Role.CLIENT);
-        client.setPhoto(null);
         client.setAddress(address);
 
         clientRepository.save(client);

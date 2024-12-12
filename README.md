@@ -4,10 +4,10 @@ Para iniciar o projeto deve se criar o banco com o arquivo docker-compose rodand
 Caso queria fazer a consulta SQL em um SGBD as credenciais de acesso são\
   url_conexão: jdbc:postgresql://localhost:5432/postgres\
   user: admin\
-  password: admin\
+  password: admin
 
 A documentação do projeto foi feita utilizando Swagger para acessar a documentação das API'S, pode acessar a url\ 
-  http://localhost:8080/swagger-ui/index.html\
+  http://localhost:8080/swagger-ui/index.html
 
 Não se esqueça de colocar o Token de autenticação depois de se registrar e fazer login\
   

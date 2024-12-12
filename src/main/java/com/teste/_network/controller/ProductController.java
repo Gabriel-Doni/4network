@@ -21,12 +21,17 @@ import com.teste._network.dto.ResponseProductDTO;
 import com.teste._network.service.ProductService;
 import com.teste._network.service.TokenService;
 import com.teste._network.utils.Return;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/product")
+@Tag(name = "Product", description = "Endpoints para gerenciar produtos")
 public class ProductController {
 
     @Autowired
@@ -35,8 +40,11 @@ public class ProductController {
     @Autowired
     private TokenService tokenService;
 
+    @Operation(summary = "Criar produto", description = "Registra um novo produto no sistema")
     @PostMapping()
-    public ResponseEntity<?> createProduct(@RequestHeader("Authorization") String token,
+    public ResponseEntity<?> createProduct(
+            @Parameter(description = "Token de autorização", required = true, example = "Bearer <token>")
+            @RequestHeader("Authorization") String token,
             @RequestBody @Valid RegisterProductDTO data,
             BindingResult result) {
 
@@ -49,43 +57,41 @@ public class ProductController {
         }
 
         try {
-
-            productService.createProduct(data, tokenService.getIdFromToken(token = token.replace("Bearer ", "")));
-
+            productService.createProduct(data, tokenService.getIdFromToken(token.replace("Bearer ", "")));
             return ResponseEntity.ok(new Return.Message("Produto registrado!"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new Return.Message(e.getMessage()));
         }
     }
 
+    @Operation(summary = "Salvar imagem do produto", description = "Salva a imagem associada a um produto")
     @PostMapping("/image")
-    public ResponseEntity<?> saveClientImage(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<?> saveProductImage(
+            @RequestParam("file") MultipartFile file,
             @RequestParam("idProduct") Long id) {
 
         try {
             productService.saveProductImage(file.getBytes(), id);
-
             return ResponseEntity.ok(new Return.Message("Imagem salva!"));
-
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new Return.Message(e.getMessage()));
         }
     }
 
+    @Operation(summary = "Listar produtos", description = "Retorna uma lista de produtos paginada")
     @GetMapping
     public ResponseEntity<?> getProducts(
             @RequestParam(required = false, name = "client") UUID id,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size) {
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @Parameter(description = "Token de autorização", required = true, example = "Bearer <token>")
+            @RequestHeader("Authorization") String token) {
 
         try {
             Page<ResponseProductDTO> res = productService.getProducts(page, size, id);
-
             return ResponseEntity.ok(new Return.MessageWithArray<ResponseProductDTO>("Produtos", res.getContent()));
-
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new Return.Message(e.getMessage()));
         }
     }
-
 }

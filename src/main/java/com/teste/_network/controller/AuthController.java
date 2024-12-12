@@ -20,11 +20,14 @@ import com.teste._network.service.AuthService;
 import com.teste._network.service.TokenService;
 import com.teste._network.utils.Return;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/api/auth")
+@Tag(name = "Auth", description = "Endpoints para autenticação e registro de usuário")
 public class AuthController {
 
     @Autowired
@@ -36,6 +39,7 @@ public class AuthController {
     @Autowired
     private TokenService tokenService;
 
+    @Operation(summary = "Realiza a autenticação do usuário", description = "Autentica um usuário e retorna um token JWT", method = "POST")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid AuthDTO data, BindingResult result) {
 
@@ -55,12 +59,11 @@ public class AuthController {
 
             return ResponseEntity.ok(new Return.MessageWithToken("Usuario logado!", token));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new Return.MessageWithToken(e.getMessage(), null)); // Retornando
-                                                                                                        // erro
+            return ResponseEntity.badRequest().body(new Return.MessageWithToken(e.getMessage(), null));
         }
-
     }
 
+    @Operation(summary = "Registra um novo usuário", description = "Cadastra um novo usuário no sistema", method = "POST")
     @PostMapping("/register")
     @Transactional
     public ResponseEntity<?> register(
@@ -77,11 +80,9 @@ public class AuthController {
 
         try {
             authService.register(data);
-
             return ResponseEntity.ok(new Return.Message("Usuário registrado!"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new Return.Message(e.getMessage()));
         }
     }
-
 }
